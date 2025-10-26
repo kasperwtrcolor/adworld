@@ -9,7 +9,7 @@ function App() {
   const [customAds, setCustomAds] = useState([]);
   const [selectedAd, setSelectedAd] = useState(null);
   const [tokenSettings, setTokenSettings] = useState(null);
-  const [isChecking, setIsChecking] = useState(false);
+  const [, setIsChecking] = useState(false);
   const [hasAccess, setHasAccess] = useState(false);
   const [userBalance, setUserBalance] = useState(0);
   const [, setShowAdminPanel] = useState(false);
@@ -438,61 +438,6 @@ function App() {
       console.error('Error incrementing impression:', error);
     }
   };
-  if (!userWallet) {
-    return <div className="min-h-screen text-white flex items-center justify-center" style={{
-      background: '#FF6680'
-    }}>
-      <div className="text-center">
-        <div className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent text-6xl font-black mb-6">
-          adworld.space
-        </div>
-        <Shield className="w-16 h-16 mx-auto mb-4 text-emerald-400" />
-        <h2 className="text-3xl font-bold mb-4">Connect Wallet to Access</h2>
-        <UserButton />
-      </div>
-    </div>;
-  }
-  if (isChecking) {
-    return <div className="min-h-screen text-white flex items-center justify-center" style={{
-      background: '#FF6680'
-    }}>
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-400 mx-auto mb-4"></div>
-        <p className="text-xl">Checking token balance...</p>
-      </div>
-    </div>;
-  }
-  if (!hasAccess && !isAdmin) {
-    return <div className="min-h-screen text-white flex items-center justify-center p-6" style={{
-      background: '#FF6680'
-    }}>
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl p-8 text-center shadow-2xl">
-        <img src="https://cdn.dev.fun/asset/6694e0d5383171beaa03/adworld logo no text_3158e0fe.png" alt="adworld logo" className="w-24 h-24 mx-auto mb-4" />
-        <h2 className="text-3xl font-bold mb-4 text-white">Access Denied</h2>
-        <p className="text-xl mb-2 text-white/90">You need to hold tokens to access this app</p>
-        {tokenSettings && <div className="mt-6 bg-white/10 border border-white/30 p-4 rounded-xl">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            {tokenImage && <img src={tokenImage} alt="Required Token" className="w-16 h-16 rounded-full border-2 border-white/30 shadow-lg" onError={e => {
-              e.target.style.display = 'none';
-            }} />}
-            <div className="text-left">
-              <p className="text-sm text-white/80 mb-1">Required Token:</p>
-              <p className="font-mono text-xs break-all text-white/60">{tokenSettings.token_address}</p>
-            </div>
-          </div>
-            <p className="text-lg">Your Balance: <span className="font-bold text-white">{userBalance.toFixed(4)}</span></p>
-            <p className="text-lg">Required: <span className="font-bold text-white">{tokenSettings.required_amount}</span></p>
-          </div>}
-        <button onClick={checkUserBalance} className="mt-6 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg border border-white/40">
-          Recheck Balance
-        </button>
-        <div className="mt-4">
-          <p className="text-sm text-white/70 mb-3">Or connect a different wallet:</p>
-          <UserButton />
-        </div>
-      </div>
-    </div>;
-  }
   return <div className="min-h-screen text-white overflow-x-hidden" style={{
     background: '#FF6680'
   }}>
@@ -526,109 +471,134 @@ function App() {
               <div className="h-1 w-64 mx-auto bg-gradient-to-r from-transparent via-emerald-400 to-transparent rounded-full animate-pulse"></div>
             </div>
             {}
-            <div className="mb-8 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl">
-              <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/20">
-                    {rank.icon}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xl font-bold">{userWallet?.slice(0, 6)}...{userWallet?.slice(-4)}</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${rank.color} text-white shadow-lg`}>
-                        {rank.name}
-                      </span>
+            {!userWallet ? <div className="mb-8 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl text-center">
+                <Shield className="w-16 h-16 mx-auto mb-4 text-emerald-400" />
+                <h3 className="text-2xl font-bold mb-4">Connect Your Wallet</h3>
+                <p className="text-gray-400 mb-6">Connect your wallet to view your earnings dashboard</p>
+                <UserButton />
+              </div> : !hasAccess && !isAdmin ? <div className="mb-8 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl text-center">
+                <img src="https://cdn.dev.fun/asset/6694e0d5383171beaa03/adworld logo no text_3158e0fe.png" alt="adworld logo" className="w-24 h-24 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold mb-4 text-white">Insufficient Token Balance</h3>
+                <p className="text-gray-400 mb-4">You need to hold tokens to earn revenue from impressions</p>
+                {tokenSettings && <div className="mt-6 bg-white/10 border border-white/30 p-4 rounded-xl max-w-md mx-auto">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    {tokenImage && <img src={tokenImage} alt="Required Token" className="w-16 h-16 rounded-full border-2 border-white/30 shadow-lg" onError={e => {
+                e.target.style.display = 'none';
+              }} />}
+                    <div className="text-left">
+                      <p className="text-sm text-white/80 mb-1">Required Token:</p>
+                      <p className="font-mono text-xs break-all text-white/60">{tokenSettings.token_address}</p>
                     </div>
-                    <p className="text-sm text-gray-400">Token Holder</p>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-gray-400 mb-1">Total Revenue Earned</div>
-                  <div className="text-3xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent tabular-nums">
-                    ${earnings.toFixed(6)}
+                  <p className="text-lg">Your Balance: <span className="font-bold text-white">{userBalance.toFixed(4)}</span></p>
+                  <p className="text-lg">Required: <span className="font-bold text-white">{tokenSettings.required_amount}</span></p>
+                </div>}
+                <button onClick={checkUserBalance} className="mt-6 bg-white/20 hover:bg-white/30 px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg border border-white/40">
+                  Recheck Balance
+                </button>
+              </div> : <div className="mb-8 bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl">
+                <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-3xl shadow-lg shadow-emerald-500/20">
+                      {rank.icon}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xl font-bold">{userWallet?.slice(0, 6)}...{userWallet?.slice(-4)}</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${rank.color} text-white shadow-lg`}>
+                          {rank.name}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-400">Token Holder</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-black/40 border border-emerald-500/20 rounded-xl p-4 hover:border-emerald-500/40 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Impressions This Week</span>
-                    {tokenImage ? <img src={tokenImage} alt="Token" className="w-5 h-5 rounded-full" onError={e => {
-                  e.target.style.display = 'none';
-                }} /> : <Eye className="w-4 h-4 text-emerald-400" />}
-                  </div>
-                  <div className="text-2xl font-bold tabular-nums">{userStats?.total_impressions || 0}</div>
-                  <div className="mt-2 bg-gray-800 rounded-full h-2 overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full transition-all duration-500" style={{
-                  width: `${Math.min((userStats?.total_impressions || 0) / 1000 * 100, 100)}%`
-                }}></div>
-                  </div>
-                </div>
-                <div className="bg-black/40 border border-teal-500/20 rounded-xl p-4 hover:border-teal-500/40 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Holder Share</span>
-                    <DollarSign className="w-4 h-4 text-teal-400" />
-                  </div>
-                  <div className="text-2xl font-bold tabular-nums">{(userBalance / (tokenSettings?.required_amount || 1) * 100).toFixed(1)}%</div>
-                  <div className="text-xs text-gray-500 mt-1">${earnings.toFixed(6)}</div>
-                </div>
-                <div className="bg-black/40 border border-purple-500/20 rounded-xl p-4 hover:border-purple-500/40 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">CPM Rate</span>
-                    <Zap className="w-4 h-4 text-purple-400 animate-pulse" />
-                  </div>
-                  <div className="text-2xl font-bold tabular-nums">${(CPM_RATE * 1000).toFixed(2)}</div>
-                  <div className="text-xs text-gray-500 mt-1">per 1000 views</div>
-                </div>
-                <div className="bg-black/40 border border-yellow-500/20 rounded-xl p-4 hover:border-yellow-500/40 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Token Balance</span>
-                    <Trophy className="w-4 h-4 text-yellow-400" />
-                  </div>
-                  <div className="text-2xl font-bold tabular-nums">{userBalance.toFixed(2)}</div>
-                  <div className="text-xs text-gray-500 mt-1">{(userBalance / (tokenSettings?.required_amount || 1)).toFixed(2)}x minimum</div>
-                </div>
-              </div>
-              <div className="bg-gradient-to-br from-emerald-900/30 to-teal-900/30 backdrop-blur-xl border border-emerald-500/30 rounded-2xl p-6 shadow-2xl">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold flex items-center gap-2">
-                    <DollarSign className="w-6 h-6 text-emerald-400" />
-                    Your Claimable Earnings
-                  </h3>
-                  <div className="bg-black/40 border border-emerald-500/30 rounded-xl px-4 py-2">
-                    <div className="text-xs text-gray-400">Vault Balance</div>
-                    <div className="text-sm font-bold text-emerald-400 tabular-nums">{vaultBalance.toFixed(6)} SOL</div>
-                  </div>
-                </div>
-                <div className="mb-6">
-                  <div className="flex justify-between items-baseline mb-2">
-                    <div className="text-4xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent tabular-nums">
+                  <div className="text-right">
+                    <div className="text-sm text-gray-400 mb-1">Total Revenue Earned</div>
+                    <div className="text-3xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent tabular-nums">
                       ${earnings.toFixed(6)}
                     </div>
-                    <div className="text-sm text-gray-400">
-                      {earnings >= 5 ? '✅ Ready to claim!' : `${(5 - earnings).toFixed(6)} to go`}
-                    </div>
-                  </div>
-                  <div className="relative bg-gray-800 rounded-full h-6 overflow-hidden border border-gray-700">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 rounded-full transition-all duration-700 ease-out" style={{
-                  width: `${Math.min(earnings / 5 * 100, 100)}%`
-                }}></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-bold text-white drop-shadow-lg z-10">
-                        {(earnings / 5 * 100).toFixed(1)}% to $5.00
-                      </span>
-                    </div>
-                    {earnings >= 5 && <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>}
                   </div>
                 </div>
-                <button onClick={handleClaim} disabled={earnings < 5 || isClaiming} className={`w-full px-6 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg ${earnings >= 5 ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105' : 'bg-gray-700 cursor-not-allowed opacity-50'}`}>
-                  {isClaiming ? 'Claiming...' : earnings >= 5 ? '💰 Claim Now!' : '🔒 Minimum $5 Required'}
-                </button>
-                {earnings >= 5 && <div className="mt-4 text-center text-sm text-emerald-400 animate-pulse">
-                    ⚡ You can claim your earnings now!
-                  </div>}
-              </div>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-black/40 border border-emerald-500/20 rounded-xl p-4 hover:border-emerald-500/40 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-400">Impressions This Week</span>
+                      {tokenImage ? <img src={tokenImage} alt="Token" className="w-5 h-5 rounded-full" onError={e => {
+                  e.target.style.display = 'none';
+                }} /> : <Eye className="w-4 h-4 text-emerald-400" />}
+                    </div>
+                    <div className="text-2xl font-bold tabular-nums">{userStats?.total_impressions || 0}</div>
+                    <div className="mt-2 bg-gray-800 rounded-full h-2 overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full transition-all duration-500" style={{
+                  width: `${Math.min((userStats?.total_impressions || 0) / 1000 * 100, 100)}%`
+                }}></div>
+                    </div>
+                  </div>
+                  <div className="bg-black/40 border border-teal-500/20 rounded-xl p-4 hover:border-teal-500/40 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-400">Holder Share</span>
+                      <DollarSign className="w-4 h-4 text-teal-400" />
+                    </div>
+                    <div className="text-2xl font-bold tabular-nums">{(userBalance / (tokenSettings?.required_amount || 1) * 100).toFixed(1)}%</div>
+                    <div className="text-xs text-gray-500 mt-1">${earnings.toFixed(6)}</div>
+                  </div>
+                  <div className="bg-black/40 border border-purple-500/20 rounded-xl p-4 hover:border-purple-500/40 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-400">CPM Rate</span>
+                      <Zap className="w-4 h-4 text-purple-400 animate-pulse" />
+                    </div>
+                    <div className="text-2xl font-bold tabular-nums">${(CPM_RATE * 1000).toFixed(2)}</div>
+                    <div className="text-xs text-gray-500 mt-1">per 1000 views</div>
+                  </div>
+                  <div className="bg-black/40 border border-yellow-500/20 rounded-xl p-4 hover:border-yellow-500/40 transition-all duration-300">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-400">Token Balance</span>
+                      <Trophy className="w-4 h-4 text-yellow-400" />
+                    </div>
+                    <div className="text-2xl font-bold tabular-nums">{userBalance.toFixed(2)}</div>
+                    <div className="text-xs text-gray-500 mt-1">{(userBalance / (tokenSettings?.required_amount || 1)).toFixed(2)}x minimum</div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-emerald-900/30 to-teal-900/30 backdrop-blur-xl border border-emerald-500/30 rounded-2xl p-6 shadow-2xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold flex items-center gap-2">
+                      <DollarSign className="w-6 h-6 text-emerald-400" />
+                      Your Claimable Earnings
+                    </h3>
+                    <div className="bg-black/40 border border-emerald-500/30 rounded-xl px-4 py-2">
+                      <div className="text-xs text-gray-400">Vault Balance</div>
+                      <div className="text-sm font-bold text-emerald-400 tabular-nums">{vaultBalance.toFixed(6)} SOL</div>
+                    </div>
+                  </div>
+                  <div className="mb-6">
+                    <div className="flex justify-between items-baseline mb-2">
+                      <div className="text-4xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent tabular-nums">
+                        ${earnings.toFixed(6)}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {earnings >= 5 ? '✅ Ready to claim!' : `${(5 - earnings).toFixed(6)} to go`}
+                      </div>
+                    </div>
+                    <div className="relative bg-gray-800 rounded-full h-6 overflow-hidden border border-gray-700">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 rounded-full transition-all duration-700 ease-out" style={{
+                  width: `${Math.min(earnings / 5 * 100, 100)}%`
+                }}></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-bold text-white drop-shadow-lg z-10">
+                          {(earnings / 5 * 100).toFixed(1)}% to $5.00
+                        </span>
+                      </div>
+                      {earnings >= 5 && <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>}
+                    </div>
+                  </div>
+                  <button onClick={handleClaim} disabled={earnings < 5 || isClaiming} className={`w-full px-6 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg ${earnings >= 5 ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105' : 'bg-gray-700 cursor-not-allowed opacity-50'}`}>
+                    {isClaiming ? 'Claiming...' : earnings >= 5 ? '💰 Claim Now!' : '🔒 Minimum $5 Required'}
+                  </button>
+                  {earnings >= 5 && <div className="mt-4 text-center text-sm text-emerald-400 animate-pulse">
+                      ⚡ You can claim your earnings now!
+                    </div>}
+                </div>
+              </div>}
           </>}
         {}
         {activeTab === 'ads' && <>
